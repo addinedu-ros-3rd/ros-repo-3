@@ -18,6 +18,13 @@
 ## Use Case Diagram
 ![Screenshot from 2024-01-02 14-10-56](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/300d21e0-f566-41df-aac1-43a6956aaf1e)
 
+## 로봇팔 상태전이도
+![Screenshot from 2024-01-02 14-30-17](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/1669fa5f-473a-4a62-b043-8e910a9c7cd3)
+
+## 로봇팔 기본 구성 요소
+![Screenshot from 2024-01-02 14-31-20](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/7b9c7e8b-d9f4-40cd-9649-b8c86d72ec11)
+
+
 
 
 
