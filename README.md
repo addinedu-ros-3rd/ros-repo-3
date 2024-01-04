@@ -24,6 +24,9 @@
 ## 로봇팔 기본 구성 요소
 ![Screenshot from 2024-01-02 14-31-20](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/7b9c7e8b-d9f4-40cd-9649-b8c86d72ec11)
 
+## 비품 가져다 주기 시나리오
+![bipoom drawio](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/a4704649-b1ed-47cb-92a2-4745ab69350f)
+
 
 
 
