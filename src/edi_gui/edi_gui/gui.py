@@ -1,9 +1,7 @@
 import rclpy
 import sys
-
 from rclpy.node import Node
 from std_msgs.msg import Int8MultiArray
-from edi_msg.srv import Bipoom
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -12,6 +10,7 @@ from PyQt5.QtCore import *
 
 GUI_PATH = "/home/soomin/ros-repo-3/src/edi_gui/edi_gui/edi.ui"
 from_class = uic.loadUiType(GUI_PATH)[0]
+
 
 class WindowClass(QMainWindow, from_class):
 
@@ -28,12 +27,17 @@ class WindowClass(QMainWindow, from_class):
 
 
     def click_pencil(self):
-        self.gui.SendInfoToDB("pencil")
-        
+        text, ok = QInputDialog.getText(self, 'Bipoom - Pencil', 'Counts:')
 
-    def click_ball(self):
-        self.gui.SendInfoToDB("ball")
-        
+        if text and ok:
+            self.gui.SendInfoToDB("pencil", int(text))
+
+
+    def click_ball(self):   
+        text, ok = QInputDialog.getText(self, 'Bipoom - Ball', 'Counts:')
+
+        if text and ok:
+            self.gui.SendInfoToDB("ball", int(text))
     
     def shutdown_ros(self):
         self.gui.destroy_node()
@@ -42,21 +46,24 @@ class WindowClass(QMainWindow, from_class):
 
 
 class GUI(Node):
+    
     def __init__(self):
         super().__init__('edi_gui_node')
 
         self.pub = self.create_publisher(Int8MultiArray, "/bipoom_code", 10)
+        
 
-
-    def SendInfoToDB(self, name):
+    def SendInfoToDB(self, name, counts):
         msg = Int8MultiArray()
         code = [0, 0]
 
         if (name == "pencil"):
             code[0] = 1
+            code[1] = counts
         
         elif (name == "ball"):
             code[0] = 2
+            code[1] = counts
 
         msg.data = code
         
