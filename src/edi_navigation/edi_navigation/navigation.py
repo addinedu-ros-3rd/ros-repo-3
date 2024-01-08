@@ -6,7 +6,10 @@ from geometry_msgs.msg import PoseStamped, PointStamped, PoseWithCovarianceStamp
 from nav2_simple_commander.robot_navigator import TaskResult
 from rclpy.duration import Duration
 from tf_transformations import euler_from_quaternion, quaternion_from_euler
+from std_msgs.msg import Int8MultiArray
 
+bipoom_location = [[1.7631229162216187, 0.018305590376257896, 0.0064697265625],
+                  [1.8413116931915283, -0.7576633095741272, 0.0064697265625]]
 
 
 class Navigation(Node):
@@ -16,29 +19,32 @@ class Navigation(Node):
         
         self.nav = BasicNavigator()
         self.nav.waitUntilNav2Active()
-        print("nav2 is Ok!!!")
+        self.get_logger().info("SUCCESS NAV2")
 
         self.clicked_point = PointStamped()
         self.goal_pose = PoseStamped()
         self.pose_current = PoseWithCovarianceStamped()
 
-        self.clicked_point_sub = self.create_subscription(PointStamped, '/clicked_point', self.clicked_point_callback, 10)
+        # self.clicked_point_sub = self.create_subscription(PointStamped, '/clicked_point', self.clicked_point_callback, 10)
         self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.vel_callback, 10)
         self.amcl_pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.callback, 10)
+        self.bipoom_info_sub = self.create_subscription(Int8MultiArray, "/bipoom_info", self.bipoom_callback, 10)
         
         self.pre_X = 0.0
         self.pre_Y = 0.0
         self.vel = 0.0
-        
 
-    def clicked_point_callback(self, msg):
+        self.get_logger().info("Success load navigation")
+
+        
+    def goToPose(self, bipoom_number):
         
         self.goal_pose.header.frame_id = 'map'
         self.goal_pose.header.stamp = self.nav.get_clock().now().to_msg()
         
-        self.goal_pose.pose.position.x = msg.point.x
-        self.goal_pose.pose.position.y = msg.point.y
-        self.goal_pose.pose.position.z = msg.point.z
+        self.goal_pose.pose.position.x = bipoom_location[bipoom_number-1][0]
+        self.goal_pose.pose.position.y = bipoom_location[bipoom_number-1][1]
+        self.goal_pose.pose.position.z = bipoom_location[bipoom_number-1][2]
 
         self.goal_pose.pose.orientation.x = 0.0
         self.goal_pose.pose.orientation.y = 0.0
@@ -68,9 +74,15 @@ class Navigation(Node):
         elif result == TaskResult.FAILED:
             print('goal failed')
 
+    
     def vel_callback(self, msg):
         self.vel = msg.linear.x
 
+
+    def bipoom_callback(self, msg):
+        bipoom_info = msg.data
+        self.goToPose(bipoom_info[1])
+        
 
     def callback(self, data):
         
@@ -92,10 +104,11 @@ class Navigation(Node):
         self.cur_X = self.pre_X + 0.1 * self.vel * np.cos(yaw*np.pi / 180)
         self.cur_Y = self.pre_Y + 0.1 * self.vel * np.sin(yaw*np.pi / 180)
 
-        print("X : ", self.cur_X, "Y: ", self.cur_Y, "vel: ", self.vel, "yaw : ", yaw)
+        # print("X : ", self.cur_X, "Y: ", self.cur_Y, "vel: ", self.vel, "yaw : ", yaw)
         
         self.pre_X = self.cur_X
         self.pre_Y = self.cur_Y
+
 
     def convert_degree(self, input):
         return np.array(input) * 180. / np.pi
