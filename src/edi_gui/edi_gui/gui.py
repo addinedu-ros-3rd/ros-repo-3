@@ -56,7 +56,7 @@ class GUI(Node):
         super().__init__('edi_gui')
 
         self.pub = self.create_publisher(Int8MultiArray, "/bipoom_code", 10)
-        self.sub = self.create_subscription(Int32, "/bipoom_exist", self.is_exist_callback, 10)
+        self.sub = self.create_subscription(Int8MultiArray, "/bipoom_exist", self.is_exist_callback, 10)
         
 
     def SendInfoToDB(self, name, counts):
@@ -77,10 +77,10 @@ class GUI(Node):
 
 
     def is_exist_callback(self, msg):
-        self.is_exist = msg.data
-        print(self.is_exist)
+        is_exist = msg.data
+        print(is_exist)
 
-        if not self.is_exist:
+        if not is_exist[0]:
             QMessageBox.warning(self, 'Bipoom - Warning', 'Fill the equipments')
 
 

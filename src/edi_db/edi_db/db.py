@@ -9,7 +9,6 @@ class DB(Node):
 
     def __init__(self):
         super().__init__("edi_db")
-
         
         self.db_con = mysql.connector.connect(
             host = "database-1.cmdlhagy2um9.ap-northeast-2.rds.amazonaws.com",
@@ -19,7 +18,7 @@ class DB(Node):
             database = "edi"
         )
         self.sub = self.create_subscription(Int8MultiArray, "/bipoom_code", self.bipoom_callback, 10)
-        self.pub = self.create_publisher(Int32, "/bipoom_exist", 10)
+        self.pub = self.create_publisher(Int8MultiArray, "/bipoom_exist", 10)
         self.bipoom_info_pub = self.create_publisher(Int8MultiArray, "/bipoom_info", 10)
         self.cur = self.db_con.cursor()
 
@@ -28,7 +27,7 @@ class DB(Node):
 
     def bipoom_callback(self, msg):
         info = msg.data
-        is_exist = Int32()
+        is_exist = Int8MultiArray()
 
         name = info[0]
         counts = info[1]
@@ -39,10 +38,10 @@ class DB(Node):
         current_count = result[name-1][2] - counts
 
         if (current_count < 0):
-            is_exist.data = 0
+            is_exist.data = [0, 0]
             self.pub.publish(is_exist)
         else:
-            is_exist.data = 1
+            is_exist.data = [1, 0]
             self.pub.publish(is_exist)
 
             # print("a: ", result[name-1][2], "b: ", counts)
