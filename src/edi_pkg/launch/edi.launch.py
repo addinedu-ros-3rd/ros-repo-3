@@ -6,15 +6,15 @@ def generate_launch_description():
     return LaunchDescription(
         [
             ExecuteProcess(
-                cmd=["ros2", "run", "edi_gui", "gui"], output="screen"
+                cmd=["ros2", "run", "edi_pkg", "gui"], output="screen"
             ),
 
             ExecuteProcess(
-                cmd=["ros2", "run", "edi_db", "db"], output="screen"
+                cmd=["ros2", "run", "edi_pkg", "db"], output="screen"
             ),
 
             ExecuteProcess(
-                cmd=["ros2", "run", "edi_navigation", "navigation"], output="screen"
+                cmd=["ros2", "run", "edi_pkg", "navigation"], output="screen"
             ),
 
         ]

@@ -9,7 +9,7 @@ from PyQt5 import uic
 from PyQt5.QtCore import *
 
 
-GUI_PATH = "/home/soomin/ros-repo-3/src/edi_gui/edi_gui/edi.ui"
+GUI_PATH = "/home/soomin/ros-repo-3/src/edi_pkg/edi_pkg/utils/edi.ui"
 from_class = uic.loadUiType(GUI_PATH)[0]
 
 

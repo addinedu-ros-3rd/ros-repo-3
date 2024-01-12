@@ -23,7 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'launch = edi_pkg.launch:main'
+            'db = edi_pkg.db:main',
+            'gui = edi_pkg.gui:main',
+            'navigation = edi_pkg.navigation:main'
         ],
     },
 )
