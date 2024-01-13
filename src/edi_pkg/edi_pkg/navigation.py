@@ -6,9 +6,9 @@ from nav2_simple_commander.robot_navigator import BasicNavigator
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, PointStamped, PoseWithCovarianceStamped, Twist
 from tf_transformations import euler_from_quaternion, quaternion_from_euler
-from std_msgs.msg import Int8MultiArray
+from std_msgs.msg import Int8MultiArray, String
 from nav2_simple_commander.robot_navigator import TaskResult
-from rclpy.duration import Duration
+
 
 bipoom_location = [[1.7631229162216187, 0.018305590376257896, 0.0064697265625],
                   [1.8413116931915283, -0.7576633095741272, 0.0064697265625]]
@@ -23,12 +23,9 @@ class Navigation(Node):
         self.nav.waitUntilNav2Active()
         self.get_logger().info("SUCCESS NAV2")
 
-        self.quantile_time = 0.95
-        
-        self.goal_pose = PoseStamped()
-
+        self.task_complete_pub = self.create_publisher(String, '/task_complete', 10)
         self.vel_sub = self.create_subscription(Twist, '/cmd_vel', self.vel_callback, 10)
-        self.amcl_pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.callback, 10)
+        self.amcl_pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.amcl_pose_callback, 10)
         self.bipoom_info_sub = self.create_subscription(Int8MultiArray, "/bipoom_info", self.bipoom_callback, 10)
         # self.current_pose_sub = self.create_subscription(PoseWithCovarianceStamped, "/amcl_pose", self.calc_diff_pose, 10)
     
@@ -48,9 +45,6 @@ class Navigation(Node):
         bipoom_pose.pose.position.x = bipoom_location[bipoom_number-1][0]
         bipoom_pose.pose.position.y = bipoom_location[bipoom_number-1][1]
         bipoom_pose.pose.position.z = bipoom_location[bipoom_number-1][2]
-
-        self.goal = [bipoom_location[bipoom_number-1][0],
-                    bipoom_location[bipoom_number-1][1]]
         
         bipoom_pose.pose.orientation.x = 0.0
         bipoom_pose.pose.orientation.y = 0.0
@@ -70,9 +64,6 @@ class Navigation(Node):
         home_pose.pose.position.x = home[0]
         home_pose.pose.position.y = home[1]
         home_pose.pose.position.z = home[2]
-
-        self.goal_pose.pose.position.x = home[0]
-        self.goal_pose.pose.position.y = home[1]
 
         home_pose.pose.orientation.x = 0.0
         home_pose.pose.orientation.y = 0.0
@@ -94,7 +85,7 @@ class Navigation(Node):
                 
         result = self.nav.getResult()
         if result == TaskResult.SUCCEEDED:
-            self.get_logger().info("goal succed")    
+            self.get_logger().info("goal succed")
         elif result == TaskResult.CANCELED:
             self.get_logger().info('goal was canceled')
         elif result == TaskResult.FAILED:
@@ -107,12 +98,15 @@ class Navigation(Node):
 
     def bipoom_callback(self, msg):
         bipoom_info = msg.data
-        self.goToBipoom(bipoom_info[1])
+        self.goToBipoom(bipoom_info[0])
         self.goToHome()
         
+        msg = String()
+        msg.data = "success_{0}".format(bipoom_info[1])
+        self.task_complete_pub.publish(msg)
+    
 
-    def callback(self, data):
-        
+    def amcl_pose_callback(self, data):
         pose_current = data
 
         q = [0, 0, 0, 0]
@@ -145,16 +139,6 @@ class Navigation(Node):
     #     tmp = [0, 0, 0]
     #     quaternion_from_euler(tmp[0], tmp[1], tmp[2])
 
-
-    # def calc_diff_pose(self, data):
-    #     self.current_pose = data
-        
-    #     distance = math.sqrt((self.current_pose.pose.pose.position.x - self.goal_pose.pose.position.x)**2 +\
-    #                          (self.current_pose.pose.pose.position.y - self.goal_pose.pose.position.y)**2)
-    #     if distance < 0.02:
-    #         output_msg = "Edi Arrived  Goal Point. "
-    #         self.get_logger().info(output_msg)
-            
 
 def main(args=None):
     rclpy.init(args=args)
