@@ -2,6 +2,7 @@ import rclpy
 import math
 import time
 import numpy as np
+from copy import deepcopy
 from nav2_simple_commander.robot_navigator import BasicNavigator
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped, PointStamped, PoseWithCovarianceStamped, Twist
@@ -10,9 +11,18 @@ from std_msgs.msg import Int8MultiArray, String
 from nav2_simple_commander.robot_navigator import TaskResult
 
 
-bipoom_location = [[1.7631229162216187, 0.018305590376257896, 0.0064697265625],
-                  [1.8413116931915283, -0.7576633095741272, 0.0064697265625]]
-home = [0.4821498990058899, 0.4071018695831299, 0.004547119140625]
+pencil_location = [[4.528031826019287, -0.007635989226400852, -0.001373291015625],
+                   [4.229101657867432, 5.375986576080322, -0.001434326171875],
+                   [4.6302056312561035, 12.080599784851074, -0.001434326171875]]
+
+ball_location = [[4.528031826019287, -0.007635989226400852, -0.001373291015625],
+                   [4.229101657867432, 5.375986576080322, -0.001434326171875],
+                   [4.769007682800293, 14.327844619750977, -0.001434326171875]]
+
+home = [[4.229101657867432, 5.375986576080322, -0.001434326171875],
+        [4.528031826019287, -0.007635989226400852, -0.001373291015625],
+        [0.0984344482421875, -0.032880719751119614, 0.008453369140625]]
+
 
 class Navigation(Node):
 
@@ -37,51 +47,66 @@ class Navigation(Node):
 
         
     def goToBipoom(self, bipoom_number):
+        self.bipoom_points = []
+        route = []
+
         bipoom_pose = PoseStamped()
         
         bipoom_pose.header.frame_id = 'map'
         bipoom_pose.header.stamp = self.nav.get_clock().now().to_msg()
         
-        bipoom_pose.pose.position.x = bipoom_location[bipoom_number-1][0]
-        bipoom_pose.pose.position.y = bipoom_location[bipoom_number-1][1]
-        bipoom_pose.pose.position.z = bipoom_location[bipoom_number-1][2]
-        
-        bipoom_pose.pose.orientation.x = 0.0
-        bipoom_pose.pose.orientation.y = 0.0
-        bipoom_pose.pose.orientation.z = 0.9764293082836897
-        bipoom_pose.pose.orientation.w = 0.21583745255315445
+        bipoom_pose.pose.orientation.z = 0.998839558403812
+        bipoom_pose.pose.orientation.w = 0.04816156732995615
 
-        self.nav.goToPose(bipoom_pose)
-        self.getFeedback()
+        if bipoom_number == 1:
+            route = pencil_location
+        else:
+            route = ball_location
+
+        for pt in route:
+            bipoom_pose.pose.position.x = pt[0]
+            bipoom_pose.pose.position.y = pt[1]
+            bipoom_pose.pose.position.z = pt[2]
+            self.bipoom_points.append(deepcopy(bipoom_pose))
+
+        nav_start = self.nav.get_clock().now()
+        self.nav.followWaypoints(self.bipoom_points)
+
+        # self.nav.goToPose(bipoom_pose)
+        self.getFeedback(self.bipoom_points)
 
 
     def goToHome(self):
+        self.home_points = []
         home_pose = PoseStamped()
 
         home_pose.header.frame_id = 'map'
         home_pose.header.stamp = self.nav.get_clock().now().to_msg()
+
+        home_pose.pose.orientation.z = 0.998839558403812
+        home_pose.pose.orientation.w = 0.04816156732995615
+
+        for pt in home:
+            home_pose.pose.position.x = pt[0]
+            home_pose.pose.position.y = pt[1]
+            home_pose.pose.position.z = pt[2]
+            self.home_points.append(deepcopy(home_pose))
+
+        nav_start = self.nav.get_clock().now()
+        self.nav.followWaypoints(self.home_points)
         
-        home_pose.pose.position.x = home[0]
-        home_pose.pose.position.y = home[1]
-        home_pose.pose.position.z = home[2]
-
-        home_pose.pose.orientation.x = 0.0
-        home_pose.pose.orientation.y = 0.0
-        home_pose.pose.orientation.z = 0.9764293082836897
-        home_pose.pose.orientation.w = 0.21583745255315445
-
-        self.nav.goToPose(home_pose)
-        self.getFeedback()
+        # self.nav.goToPose(home_pose)
+        self.getFeedback(self.home_points)
 
 
-    def getFeedback(self):
+    def getFeedback(self, waypoints):
         i = 0
         while not self.nav.isTaskComplete():
             i += 1
             feedback = self.nav.getFeedback()
     
             if feedback and i % 5 ==0:
-                self.get_logger().info('Distance remaining: ' + '{:.2f}'.format(feedback.distance_remaining) + ' meters.')
+                self.get_logger().info('Executing current waypoint: ' + str(feedback.current_waypoint + 1) + '/' + str(len(waypoints)))
                 
         result = self.nav.getResult()
         if result == TaskResult.SUCCEEDED:
