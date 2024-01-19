@@ -38,14 +38,19 @@ class Navigation(Node):
         self.amcl_pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/amcl_pose', self.amcl_pose_callback, 10)
         self.bipoom_info_sub = self.create_subscription(Int8MultiArray, "/bipoom_info", self.bipoom_callback, 10)
         # self.current_pose_sub = self.create_subscription(PoseWithCovarianceStamped, "/amcl_pose", self.calc_diff_pose, 10)
-    
+        self.go_home_sub = self.create_subscription(String, "/go_home", self.go_home_callback, 10)
+
         self.pre_X = 0.0
         self.pre_Y = 0.0
         self.vel = 0.0
 
         self.get_logger().info("SUCCESS LOAD NAVIGATION")
 
-        
+
+    def go_home_callback(self, msg):
+        self.goToHome()
+
+
     def goToBipoom(self, bipoom_number):
         self.bipoom_points = []
         route = []

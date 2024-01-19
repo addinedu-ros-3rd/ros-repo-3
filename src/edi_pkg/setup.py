@@ -25,7 +25,11 @@ setup(
         'console_scripts': [
             'db = edi_pkg.db:main',
             'gui = edi_pkg.gui:main',
-            'navigation = edi_pkg.navigation:main'
+            'navigation = edi_pkg.navigation:main',
+            'avoid = edi_pkg.avoidance:main',
+            'detect = edi_pkg.detect:main',
+            'tracking = edi_pkg.tracking:main',
+
         ],
     },
 )

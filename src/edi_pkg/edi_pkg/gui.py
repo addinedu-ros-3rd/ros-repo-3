@@ -1,7 +1,7 @@
 import rclpy
 import sys
 from rclpy.node import Node
-from std_msgs.msg import Int8MultiArray, Int32
+from std_msgs.msg import Int8MultiArray, Int32, String
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
@@ -25,7 +25,7 @@ class WindowClass(QMainWindow, from_class):
 
         self.pencil_btn.clicked.connect(self.click_pencil)
         self.ball_btn.clicked.connect(self.click_ball)
-
+        self.home_btn.clicked.connect(self.click_home)
 
     def click_pencil(self):
         text, ok = QInputDialog.getText(self, 'Bipoom - Pencil', 'Counts:')
@@ -43,6 +43,12 @@ class WindowClass(QMainWindow, from_class):
             # if not self.gui.is_exist:
             #     QMessageBox.warning(self, 'Bipoom - Warning', 'Fill the Balls')
     
+    def click_home(self):
+       
+        msg = String()
+        msg.data = "home"
+
+        self.gui.go_home.publish(msg)
 
     def shutdown_ros(self):
         self.gui.destroy_node()
@@ -57,7 +63,7 @@ class GUI(Node):
 
         self.pub = self.create_publisher(Int8MultiArray, "/bipoom_code", 10)
         self.sub = self.create_subscription(Int8MultiArray, "/bipoom_exist", self.is_exist_callback, 10)
-        
+        self.go_home = self.create_publisher(String, "/go_home", 10)
 
     def SendInfoToDB(self, name, counts):
         msg = Int8MultiArray()

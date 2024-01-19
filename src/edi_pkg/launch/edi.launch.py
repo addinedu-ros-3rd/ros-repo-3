@@ -17,5 +17,12 @@ def generate_launch_description():
                 cmd=["ros2", "run", "edi_pkg", "navigation"], output="screen"
             ),
 
+            ExecuteProcess(
+                cmd=["ros2", "run", "edi_pkg", "avoid"], output="screen"
+            ),
+
+            ExecuteProcess(
+                cmd=["ros2", "run", "edi_pkg", "detect"], output="screen"
+            ),
         ]
     )
