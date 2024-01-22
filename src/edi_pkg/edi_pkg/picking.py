@@ -27,11 +27,9 @@ class Picking(Node):
 
 
     def color_callback(self, msg):
-        img = self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding="bgr8")
+        self.img = self.bridge.compressed_imgmsg_to_cv2(msg, desired_encoding="bgr8")
 
-        phone_results = self.yolo(img, stream=True)
-
-        self.img = img.copy()
+        phone_results = self.yolo(self.img, stream=True)
 
         for r in phone_results:
             
