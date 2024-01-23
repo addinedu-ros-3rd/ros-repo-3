@@ -7,7 +7,7 @@ from rclpy.node import Node
 from ultralytics import YOLO
 from ultralytics.utils.plotting import Annotator
 from sensor_msgs.msg import Image, CompressedImage
-from std_msgs.msg import String
+from std_msgs.msg import Int32MultiArray
 
 
 class Picking(Node):
@@ -17,6 +17,8 @@ class Picking(Node):
         
         self.img_sub = self.create_subscription(CompressedImage, "/color/image_raw/compressed", self.color_callback, 10)
         self.depth_sub = self.create_subscription(Image, "/depth/image_rect_raw", self.depth_callback, 10)
+        self.dist_pub = self.create_publisher(Int32MultiArray, "/depth/object_distance", 10)
+        
         self.yolo = YOLO("/home/soomin/ros-repo-3/src/edi_pkg/edi_pkg/utils/model.pt")
 
         self.labels = self.yolo.names
@@ -24,6 +26,8 @@ class Picking(Node):
         self.distance = 0
         self.object_center = (0, 0)
         self.center_list = []
+        self.dist_msg = Int32MultiArray()
+        self.dist_list = []
 
 
     def color_callback(self, msg):
@@ -40,9 +44,9 @@ class Picking(Node):
                 b = box.xyxy[0]
                 c = box.cls
                 conf = box.conf
-                    
+                
                 color = self.colors[int(c)]
-                label = "{0} confidence: {1}".format(self.yolo.names[int(c)], conf.item())
+                label = "{0}{1}".format(self.yolo.names[int(c)], round(conf.item(), 3))
                 annotator.box_label(b, label, color)
                 
                 b_list = b.tolist()
@@ -59,11 +63,15 @@ class Picking(Node):
         if self.center_list != []:
             for center in self.center_list:
                 distance = img[center[1]][center[0]]
+                self.dist_list.append(int(distance))
         
                 cv2.circle(self.img, center, 5, (0,0,0), -1)
-                text = "distance : {0}".format(distance)
+                text = "dis: {0}cm".format(distance//10)
                 cv2.putText(self.img, text, center, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             
+            self.dist_msg.data = self.dist_list
+            self.dist_pub.publish(self.dist_msg)
+
             self.center_list = []
         
         cv2.imshow('color', self.img)
