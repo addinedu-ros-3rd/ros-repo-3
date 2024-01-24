@@ -9,6 +9,8 @@ from ultralytics.utils.plotting import Annotator
 from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Int32MultiArray
 
+CAMERA_LENGTH = 37 # cm
+CONVERSION_CONSTANT = 0.1153 # cm/pixel
 
 class Picking(Node):
     def __init__(self):
@@ -49,8 +51,8 @@ class Picking(Node):
                 label = "{0}{1}".format(self.yolo.names[int(c)], round(conf.item(), 3))
                 annotator.box_label(b, label, color)
                 
-                b_list = b.tolist()
-                self.object_center = (int((b_list[0] + b_list[2])/2), int((b_list[1] + b_list[3])/2))
+                self.b_list = b.tolist()
+                self.object_center = (int((self.b_list[0] + self.b_list[2])/2), int((self.b_list[1] + self.b_list[3])/2))
                 self.center_list.append(self.object_center)
 
         self.img = annotator.result()
@@ -68,7 +70,12 @@ class Picking(Node):
                 cv2.circle(self.img, center, 5, (0,0,0), -1)
                 text = "dis: {0}cm".format(distance//10)
                 cv2.putText(self.img, text, center, cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-            
+                
+                x, y = self.get_xy(center, distance)
+                text2 = "({0}, {1})".format(x, y)
+                position = (center[0], center[1] + int((self.b_list[3] - self.b_list[1])/2))
+                cv2.putText(self.img, text2, position, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+
             self.dist_msg.data = self.dist_list
             self.dist_pub.publish(self.dist_msg)
 
@@ -82,6 +89,13 @@ class Picking(Node):
         if cv2.waitKey(1) == 'q':
             cv2.destroyAllWindows()
 
+
+    def get_xy(self, center, distance):
+        squared_K = pow(distance, 2) - pow(CAMERA_LENGTH, 2) # 가상의 원점 좌표와의 거리
+        x = (center[0] - 320) * CONVERSION_CONSTANT
+        y = math.sqrt(max(0, squared_K - pow(x, 2))) 
+
+        return round(x, 2), round(y, 2)              
 
 def main(args=None):
     rclpy.init(args=args)

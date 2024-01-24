@@ -18,19 +18,12 @@ class Avoidance(Node):
         self.twist_pub = self.create_publisher(Twist, "/base_controller/cmd_vel_unstamped", 10)
         self.avoid_sub = self.create_subscription(String, "/obstacle_avoid", self.avoid, 10)
 
-        self.i_error_a = 0
-        self.d_error_a = 0
-        self.pre_center = 0
-
 
     def lidar_callback(self, msg):
         
         LidarData = [msg.ranges[187], msg.ranges[156], msg.ranges[125], msg.ranges[94], msg.ranges[63]] 
 
-        if LidarData[3] != 0.0:
-            if LidarData[3] < 0.5:
-                self.stop()
-
+        print(msg.ranges[121])
         self.left_rate = 0
         self.right_rate = 0
         
@@ -39,53 +32,23 @@ class Avoidance(Node):
         if LidarData[4]!=0.0:
             self.right_rate = LidarData[3]/LidarData[4]
         
-        # self.twist.linear.x=3.0
-        # self.twist.angular.z=0.0
-
-
 
     def avoid(self, msg):
-        # print(self.left_rate - self.right_rate)
-        # if (self.i > 5):
+
+        aaa = msg.data
         if self.left_rate > self.right_rate:
-            self.publish_twist(3.0, -6.0)
+            self.publish_twist(2.0, -4.0)
             # print("LEFT")
         
         elif self.left_rate < self.right_rate:
-            self.publish_twist(3.0, 6.0)
+            self.publish_twist(2.0, 4.0)
             # print("RIGHT")
 
         elif abs(self.left_rate-self.right_rate)<0.2:
             # print("GO")
-            self.publish_twist(3.0, 0.0)
-        # # self.twist.angular.z = 0.0
-        # self.twist_pub.publish(self.twist)
-
-            # self.i = 0
-
-        # self.i += 1
-        
-    def stop(self):
-        self.publish_twist(0.0, 0.0)
+            self.publish_twist(2.0, 0.0)
 
         
-
-    # def get_controls(self, x,  Kp_a, Ki_a, Kd_a):
-
-    #     p_error_a = x - 160
-    #     self.i_error_a += p_error_a
-    #     curr_d_error_a = p_error_a - self.d_error_a
-    #     angular = Kp_a*p_error_a + Ki_a*self.i_error_a + Kd_a*curr_d_error_a
-        
-    #     if angular > 4.0:
-    #         angular = 4.0
-
-    #     if angular < -4.0:
-    #         angular = -4.0
-        
-    #     return angular
-
-
     def publish_twist(self, linear_x, angular_z):
         self.twist.linear.x = linear_x
         self.twist.angular.z = angular_z

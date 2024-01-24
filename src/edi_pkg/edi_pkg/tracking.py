@@ -82,15 +82,14 @@ class Tracking(Node):
 
             else:
                 if self.pre_center > 0 and self.pre_center < 160 :
-                    self.publish_twist(0.2, -1.0)
+                    self.publish_twist(0.0, -0.5)
 
                 elif self.pre_center > 160:
-                    self.publish_twist(0.2, 1.0)
+                    self.publish_twist(0.0, 0.5)
                 
                 elif self.pre_center == 0:
                     self.publish_twist(0.0, 0.0)
                 
-
         img = annotator.result()
 
         cv2.imshow('Window Title', img)
@@ -119,7 +118,6 @@ class Tracking(Node):
         self.twist.angular.z = angular_z
         self.twist_pub.publish(self.twist)
 
-        
         
 def main(args=None):
     rclpy.init(args=args)
