@@ -11,7 +11,7 @@ Interaction : 사용자와 시스템 또는 사람들 간의 상호작용
 ### Project goal
 Human-Robot Interaction을 기반으로 사용자와 소통하는 지능형 서비스 로봇 만들기 
 
-#### 목표 기능 
+### 목표 기능 
 
 - 의사 결정 (👍Yes, 👎No)
 
