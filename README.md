@@ -11,7 +11,7 @@
 |**Navigation**|청소 시작 및 로봇의 주행에 관련된 동작을 요청|
 |**Object Detection**|장애물 탐지 및 청소 상태 판단|
 |**DB**|map과 로봇의 이동 trajectory 저장|
-|**ROBOT ARM**|모바일로 원격 수동 조작|
+|**ROBOT ARM (Open Manipulator)**|모바일로 원격 수동 조작|
 |**YD LIDAR**|지도 생성 및 로봇의 위치 추정|
 |**ROBOT Camera**|사용자 GUI에 디스플레이 및 Obeject Detection에 image 전달|
 
