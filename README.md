@@ -19,6 +19,9 @@ Human-Robot Interaction을 기반으로 사용자와 소통하는 지능형 서�
 
 - 자율 주행 (네비게이션, 장애물 회피, 객체 트래킹 및 따라가기) 
 
+### 에티와(ETTI)와 대화하기
+<img src="~/cd/Home/Video/Screencasts/Screencast from 01-25-2024 11:39:11 AM.webm" width="90%"></img>
+
 
 
 ## 시스템 구성도
