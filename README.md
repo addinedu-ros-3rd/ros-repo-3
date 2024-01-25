@@ -15,6 +15,10 @@
 |**YD LIDAR**|지도 생성 및 로봇의 위치 추정|
 |**ROBOT Camera**|사용자 GUI에 디스플레이 및 Obeject Detection에 image 전달|
 
+## 기술스택
+<img src="https://img.shields.io/badge/Python3-#3776AB?style=for-the-badge&logo=Python3&logoColor=white">
+
+
 ## Use Case Diagram
 ![Screenshot from 2024-01-02 14-10-56](https://github.com/addinedu-ros-3rd/ros-repo-3/assets/146153568/300d21e0-f566-41df-aac1-43a6956aaf1e)
 
