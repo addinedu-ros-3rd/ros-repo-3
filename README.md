@@ -1,17 +1,17 @@
 # ros-repo-3
 개인서비스용 로봇 '에티(ETTI)' Future of Companion Robotics : Human-Robot Interaction with ROS2 and LLM
 
-###에티(ETTI)
+### 에티(ETTI)
 
 Entertainment : 여가, 오락, 또는 즐거음을 제공하는 활동이나 이벤트를 의미
 Talk : 커뮤니케이션과 대화의 요소, 인간과 사물간의 대화
 Technology : 현대 기술, 특히 디지털 또는 전자 기술의 사용과 발전
 Interaction : 사용자와 시스템 또는 사람들 간의 상호작용
 
-###Project goal
+### Project goal
 Human-Robot Interaction을 기반으로 사용자와 소통하는 지능형 서비스 로봇 만들기 
 
-####목표 기능 
+#### 목표 기능 
 
 - 의사 결정 (👍Yes, 👎No)
 
