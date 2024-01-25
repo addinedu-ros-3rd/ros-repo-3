@@ -16,7 +16,7 @@
 |**ROBOT Camera**|사용자 GUI에 디스플레이 및 Obeject Detection에 image 전달|
 
 ## 기술스택
-<img src="https://img.shields.io/badge/Python3-#3776AB?style=for-the-badge&logo=Python&logoColor=white">
+<img src="https://img.shields.io/badge/Python3-#3776AB?style=for-the-badge&logo=Python&logoColor=black">
 
 
 ## Use Case Diagram
