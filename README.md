@@ -21,7 +21,7 @@ Human-Robot Interaction을 기반으로 사용자와 소통하는 지능형 서�
 
 ### 에티와(ETTI)와 대화하기
 <div>
-<img width="200" img src="~/cd/Home/Video/Screencasts/Screencast from 01-25-2024 11:39:11 AM.webm"></img>]
+<img width="200" img src="~/cd/Home/Video/Screencasts/Screencast from 01-25-2024 11:39:11 AM.webm"></img>
 </div>
 
 ## 시스템 구성도
